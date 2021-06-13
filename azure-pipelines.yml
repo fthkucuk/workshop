@@ -37,4 +37,12 @@ stages:
     pool:
       vmImage: 'vs2017-win2016'
     steps:
-  
+    - task: AzureRmWebAppDeployment@4
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'Visual Studio Enterprise Subscription – MPN(af8d961c-8aee-4036-a0bb-76c814568fa0)'
+        appType: 'webAppLinux'
+        WebAppName: 'workshopdenizhan'
+        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+        RuntimeStack: 'DOTNETCORE|3.1'
+        StartupCommand: 'dotnet exec WebApplication1.dll'
