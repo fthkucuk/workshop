@@ -56,7 +56,7 @@ stages:
                     azureSubscription: 'Visual Studio Enterprise Subscription – MPN(af8d961c-8aee-4036-a0bb-76c814568fa0)'
                     appType: 'webAppLinux'
                     WebAppName: 'workshopdenizhan'
-                    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+                    packageForLinux: '$(Agent.BuildDirectory)/**/*.zip'
                     RuntimeStack: 'DOTNETCORE|3.1'
                     StartupCommand: 'dotnet exec WebApplication1.dll'
     
