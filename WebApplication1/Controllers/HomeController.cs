@@ -20,6 +20,29 @@ namespace WebApplication1.Controllers
 
         public IActionResult Index()
         {
+            if (1 == 1)
+            {
+                string neco = "kerem";
+            }
+            if (2 == 1)
+            {
+                string neco = "kerem";
+            }
+
+            if (3 == 1)
+            {
+                string neco = "kerem";
+            }
+            if (4 == 1)
+            {
+                string neco = "kerem";
+            }
+            if (5 == 1)
+            {
+                string neco = "kerem";
+            }
+
+
             return View();
         }
 
