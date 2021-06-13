@@ -1,0 +1,62 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+variables:
+- name: BuildConfiguration
+  value: release
+  
+trigger:
+- master
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: Build
+  jobs:
+   - job: Build
+     steps:
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '3.1.x'
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'restore'
+          projects: '**/*.csproj'
+          feedsToUse: 'select'
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'publish'
+          publishWebProjects: true
+          arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'drop'
+          publishLocation: 'Container'
+
+- stage: Deploy
+  dependsOn: Build
+  jobs:
+     - deployment: Deployment
+       displayName: Deploy container in Prod
+       pool:
+         vmImage: ubuntu-latest
+       environment:
+         name: prod
+       strategy:
+         runOnce:
+           deploy:
+             steps:    
+                - task: AzureRmWebAppDeployment@4
+                  inputs:
+                    ConnectionType: 'AzureRM'
+                    azureSubscription: 'Visual Studio Enterprise Subscription – MPN(af8d961c-8aee-4036-a0bb-76c814568fa0)'
+                    appType: 'webAppLinux'
+                    WebAppName: 'workshopdenizhan'
+                    packageForLinux: '$(Agent.BuildDirectory)/**/*.zip'
+                    RuntimeStack: 'DOTNETCORE|3.1'
+                    StartupCommand: 'dotnet exec WebApplication1.dll'
+    
