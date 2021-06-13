@@ -4,8 +4,8 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 variables:
-  name: BuildConfiguration
-  value: "release"
+- name: BuildConfiguration
+  value: release
   
 trigger:
 - master
