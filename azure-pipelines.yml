@@ -26,16 +26,28 @@ stages:
           command: 'restore'
           projects: '**/*.csproj'
           feedsToUse: 'select'
+      - task: SonarCloudPrepare@1
+        inputs:
+          SonarCloud: 'SonarCloud'
+          organization: 'fthkucuk'
+          scannerMode: 'MSBuild'
+          projectKey: '$(Build.DefinitionName)'
+          projectName: '$(Build.DefinitionName)'
+          projectVersion: '$(Build.BuildNumber)'
       - task: DotNetCoreCLI@2
         inputs:
           command: 'publish'
           publishWebProjects: true
           arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
+      - task: SonarCloudAnalyze@1
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)'
           ArtifactName: 'drop'
           publishLocation: 'Container'
+      - task: SonarCloudPublish@1
+        inputs:
+          pollingTimeoutSec: '300'
 
 - stage: Deploy
   dependsOn: Build
