@@ -10,7 +10,7 @@ variables:
 trigger:
 - master
 pool:
-  vmImage: vs2017-win2016
+  vmImage: ubuntu-latest
 
 stages:
 - stage: Build
@@ -38,16 +38,25 @@ stages:
           publishLocation: 'Container'
 
 - stage: Deploy
+  dependsOn: Build
   jobs:
-  - job: Deploy
-
-    steps:
-    - task: AzureRmWebAppDeployment@4
-      inputs:
-        ConnectionType: 'AzureRM'
-        azureSubscription: 'Visual Studio Enterprise Subscription – MPN(af8d961c-8aee-4036-a0bb-76c814568fa0)'
-        appType: 'webAppLinux'
-        WebAppName: 'workshopdenizhan'
-        packageForLinux: '$(System.ArtifactsDirectory)\drop\*.zip'
-        RuntimeStack: 'DOTNETCORE|3.1'
-        StartupCommand: 'dotnet exec WebApplication1.dll'
+     - deployment: Deployment
+       displayName: Deploy container in Prod
+       pool:
+         vmImage: ubuntu-latest
+       environment:
+         name: prod
+       strategy:
+         runOnce:
+           deploy:
+             steps:    
+                - task: AzureRmWebAppDeployment@4
+                  inputs:
+                    ConnectionType: 'AzureRM'
+                    azureSubscription: 'Visual Studio Enterprise Subscription – MPN(af8d961c-8aee-4036-a0bb-76c814568fa0)'
+                    appType: 'webAppLinux'
+                    WebAppName: 'workshopdenizhan'
+                    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+                    RuntimeStack: 'DOTNETCORE|3.1'
+                    StartupCommand: 'dotnet exec WebApplication1.dll'
+    
